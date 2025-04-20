@@ -2,13 +2,42 @@ using UnityEngine;
 
 public class Mover : MonoBehaviour
 {
-    public float speed = 5f;
-    void Update() {
+    public Transform[] waypoints;
+    public bool[] stopAtWaypoint;
+    public float speed = 3f;
+    public KeyCode continueKey = KeyCode.Space;
 
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
+    public int currentIndex = 0;
+    private bool waitingForInput = false;
 
-        Vector3 move = new Vector3(moveX, moveY, 0f);
-        transform.position += move * speed * Time.deltaTime;
+    void Update()
+    {
+        if(waypoints.Length == 0 || currentIndex >= waypoints.Length)
+            return;
+        
+        if(waitingForInput)
+        {
+            if(Input.GetKeyDown(continueKey))
+            {
+                waitingForInput = false;
+                currentIndex++;
+            }
+            return;
+        }
+
+        Transform target = waypoints[currentIndex];
+        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, target.position) < 0.05f)
+        {
+            if (stopAtWaypoint.Length > currentIndex && stopAtWaypoint[currentIndex])
+            {
+                waitingForInput = true;
+            }
+            else
+            {
+                currentIndex++;
+            }
+        }
     }
 }
