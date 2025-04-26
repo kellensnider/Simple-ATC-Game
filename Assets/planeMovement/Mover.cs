@@ -10,6 +10,12 @@ public class Mover : MonoBehaviour
     public int currentIndex = 0;
     private bool waitingForInput = false;
 
+    void Start()
+    {
+        waypoints = FindObjectOfType<Waypoints>().waypoints;
+        stopAtWaypoint = FindObjectOfType<Waypoints>().stopAtWaypoint;
+    }
+
     void Update()
     {
         if(waypoints.Length == 0 || currentIndex >= waypoints.Length)
