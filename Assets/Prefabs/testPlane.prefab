@@ -103,13 +103,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waypoints:
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  stopAtWaypoint: 010000010000
-  speed: 0.25
+  stopAtWaypoint: 01
+  speed: 3
   continueKey: 32
   currentIndex: 0
 --- !u!58 &745665470988843943
