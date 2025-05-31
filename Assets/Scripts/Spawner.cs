@@ -6,16 +6,20 @@ public class Spawner : MonoBehaviour
     public GameObject AirSpawnPrefab1;
     public GameObject HangerSpawnPrefabefab1;
 
-    // Waypoints for Air prefab instances
+    // Holding pattern
     public Transform[] airWaypoints;
     public bool[] airStopAtWaypoint;
+
+    // Landing path
+    public Transform[] landingWaypoints;
+    public bool[] landingStopAtWaypoint;
 
     // Waypoints for Ground prefab instances
     public Transform[] groundWaypoints;
     public bool[] groundStopAtWaypoint;
 
-    public float initialSpawnRate = 2f; // seconds between spawns at level 1
-    public float spawnRateDecreasePerLevel = 0.2f; // faster spawns per level
+    public float initialSpawnRate = 2f;
+    public float spawnRateDecreasePerLevel = 0.2f;
     public int currentLevel = 1;
 
     private bool isSpawning = true;
@@ -30,8 +34,7 @@ public class Spawner : MonoBehaviour
         while (isSpawning)
         {
             SpawnSprite();
-            //float spawnRate = Mathf.Max(0.5f, initialSpawnRate - spawnRateDecreasePerLevel * (currentLevel - 1));
-            float spawnRate = 1;
+            float spawnRate = 10; // simplified
             yield return new WaitForSeconds(spawnRate);
         }
     }
@@ -42,16 +45,19 @@ public class Spawner : MonoBehaviour
         bool AirOrGround = rand.Next(2) == 0;
         GameObject sprite;
 
-        if (AirOrGround == false)
+        if (!AirOrGround)
         {
             sprite = Instantiate(AirSpawnPrefab1, GetRandomSpawnPoint(AirOrGround), Quaternion.identity);
 
-            // Assign waypoints to the spawned prefab's script
             MoverPatternToBlue mover = sprite.GetComponent<MoverPatternToBlue>();
             if (mover != null)
             {
                 mover.waypoints = airWaypoints;
                 mover.stopAtWaypoint = airStopAtWaypoint;
+
+                // 🟢 Give it a landing path for later switching
+                mover.landingWaypoints = landingWaypoints;
+                mover.landingStopAtWaypoint = landingStopAtWaypoint;
             }
             else
             {
@@ -62,7 +68,6 @@ public class Spawner : MonoBehaviour
         {
             sprite = Instantiate(HangerSpawnPrefabefab1, GetRandomSpawnPoint(AirOrGround), Quaternion.identity);
 
-            // Assign waypoints to the spawned prefab's script
             MoverHangerTo35 mover = sprite.GetComponent<MoverHangerTo35>();
             if (mover != null)
             {
@@ -71,11 +76,11 @@ public class Spawner : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Ground prefab missing MoverPatternToBlue script!");
+                Debug.LogWarning("Ground prefab missing MoverHangerTo35 script!");
             }
         }
 
-        StartCoroutine(DespawnAfterDelay(sprite, 500f)); // despawn after 500 seconds
+        StartCoroutine(DespawnAfterDelay(sprite, 500f));
     }
 
     IEnumerator DespawnAfterDelay(GameObject obj, float delay)
@@ -87,14 +92,9 @@ public class Spawner : MonoBehaviour
 
     Vector3 GetRandomSpawnPoint(bool AirOrGround)
     {
-        if (AirOrGround == true)
-        {
-            return new Vector3(4.182f, -4.644f, 0f);
-        }
-        else
-        {
-            return new Vector3(7.6f, 7.0f, 0f);
-        }
+        return AirOrGround
+            ? new Vector3(4.182f, -4.644f, 0f)
+            : new Vector3(7.6f, 7.0f, 0f);
     }
 
     public void IncreaseLevel()

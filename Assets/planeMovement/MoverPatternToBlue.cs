@@ -4,26 +4,24 @@ public class MoverPatternToBlue : MonoBehaviour
 {
     public Transform[] waypoints;
     public bool[] stopAtWaypoint;
+
+    public Transform[] landingWaypoints;
+    public bool[] landingStopAtWaypoint;
+
     public float speed = 3f;
     public KeyCode continueKey = KeyCode.Space;
 
     public int currentIndex = 0;
     private bool waitingForInput = false;
-/***
-    void Start()
-    {
-        waypoints = FindObjectOfType<RedTo35>().waypoints;
-        stopAtWaypoint = FindObjectOfType<RedTo35>().stopAtWaypoint;
-    }
-***/
+
     void Update()
     {
-        if(waypoints.Length == 0 || currentIndex >= waypoints.Length)
+        if (waypoints == null || waypoints.Length == 0 || currentIndex >= waypoints.Length)
             return;
-        
-        if(waitingForInput)
+
+        if (waitingForInput)
         {
-            if(Input.GetKeyDown(continueKey))
+            if (Input.GetKeyDown(continueKey))
             {
                 waitingForInput = false;
                 currentIndex++;
@@ -45,5 +43,14 @@ public class MoverPatternToBlue : MonoBehaviour
                 currentIndex++;
             }
         }
+    }
+
+    // 🟢 This lets you switch to landing path dynamically
+    public void SwitchToNewPath(Transform[] newWaypoints, bool[] newStopAtWaypoint)
+    {
+        waypoints = newWaypoints;
+        stopAtWaypoint = newStopAtWaypoint;
+        currentIndex = 0;
+        waitingForInput = false;
     }
 }
